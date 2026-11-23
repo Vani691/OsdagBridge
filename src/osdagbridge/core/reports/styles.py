@@ -220,8 +220,6 @@ def render_table_layout_rules(layout: TableLayout = TABLE_LAYOUT) -> str:
         r"\setlength{\LTright}{\fill}",
         r"\raggedbottom",
         rf"\BeforeBeginEnvironment{{table}}{{\needspace{{{layout.needspace_table}}}}}",
-        r"\preto\section{\needspace{8\baselineskip}}",
-        r"\preto\subsection{\needspace{6\baselineskip}}",
     ])
 
 
@@ -261,7 +259,6 @@ def render_header_footer_styles(pn: str, jn: str, rd: str, rv: str) -> str:
   \fancyhf{}
   \renewcommand{\headrulewidth}{0pt}
   \fancyfoot[L]{\small Osdag $|$ FOSSEE $|$ Indian Institute of Technology Bombay}
-  \fancyfoot[R]{\small Page \thepage\ of \pageref{LastPage}}
   \renewcommand{\footrule}{\vspace{-4pt}\color{osdagGreen}\hrule width\headwidth height 1pt \vspace{4pt}}
 }
 \pagestyle{main}"""
