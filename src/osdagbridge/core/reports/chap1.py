@@ -1,34 +1,35 @@
 from osdagbridge.core.reports.report_utils import _tex
+from osdagbridge.core.reports.styles import build_longtable
 
 
 def ch1_project_info(m):
-    return r"""
+    info_body = "\n".join([
+        rf"\textbf{{Project Name}} & {_tex(m.project_name)} \\ \hline",
+        rf"\textbf{{Project Location}} & {_tex(m.project_location)} \\ \hline",
+        rf"\textbf{{Designer}} & {_tex(m.designer)} \\ \hline",
+        rf"\textbf{{Reviewer}} & {_tex(m.reviewer)} \\ \hline",
+        rf"\textbf{{Organization}} & {_tex(m.company)} \\ \hline",
+        rf"\textbf{{Client}} & {_tex(m.client)} \\ \hline",
+        r"\textbf{Software Version} & OsdagBridge \\ \hline",
+    ])
+    info_table = build_longtable(
+        col_spec="|L{5.5cm}|L{10.5cm}|",
+        caption="Project and Design Team Details",
+        headers=["Field", "Details"],
+        body=info_body,
+        label="tab:project-details",
+    )
+    return (
+        r"""
 \chapter{Project Information}
 
 This section records all project metadata as entered by the designer.
 
 \section{Project and Design Team Details}
 \label{sec:project-details}
-
-\begin{tabular}{|L{5.5cm}|L{8.5cm}|}
-\hline
-\textbf{Project Name} & """ + _tex(m.project_name) + r""" \\
-\hline
-\textbf{Project Location} & """ + _tex(m.project_location) + r""" \\
-\hline
-\textbf{Designer} & """ + _tex(m.designer) + r""" \\
-\hline
-\textbf{Reviewer} & """ + _tex(m.reviewer) + r""" \\
-\hline
-\textbf{Organization} & """ + _tex(m.company) + r""" \\
-\hline
-\textbf{Client} & """ + _tex(m.client) + r""" \\
-\hline
-\textbf{Software Version} & OsdagBridge \\
-\hline
-\end{tabular}
-
-
+"""
+        + info_table
+        + r"""
 \section{Applicable Codes and Standards}
 \label{sec:codes}
 
@@ -44,5 +45,4 @@ This section records all project metadata as entered by the designer.
 \item Indian Standard (IS) 6006: Steel Bearings
 \end{itemize}
 """
-
-
+    )

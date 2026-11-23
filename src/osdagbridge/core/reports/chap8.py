@@ -1,104 +1,63 @@
 from typing import List
 
-from osdagbridge.core.utils.common import (
-    KEY_DESIGN_MODE
-)
+from osdagbridge.core.utils.common import KEY_DESIGN_MODE
+from osdagbridge.core.reports.styles import build_longtable
 
 
 def ch8_design_log(log_entries: List[str], input_dict: dict) -> str:
-    """Render Chapter 8 using real log_entries, matching Osdag color convention."""
-
-    lines_tex = []
-    if log_entries:
-        for entry in log_entries:
-            for raw_line in entry.split('\n'):
-                line = raw_line.strip()
-                if not line:
-                    continue
-                escaped = (line
-                    .replace('_', r'\_')
-                    .replace('%', r'\%')
-                    .replace('&', r'\&')
-                    .replace('#', r'\#'))
-                upper = line.upper()
-                if 'WARNING' in upper:
-                    lines_tex.append(
-                        rf'\textcolor{{blue}}{{{escaped}}}\\')
-                elif 'ERROR' in upper:
-                    lines_tex.append(
-                        rf'\textcolor{{red}}{{{escaped}}}\\')
-                elif 'INFO' in upper:
-                    lines_tex.append(
-                        rf'\textcolor{{osdagGreen}}{{{escaped}}}\\')
-                else:
-                    continue  # skip lines without a known level — Osdag patter
-
-    mode = str(input_dict.get(KEY_DESIGN_MODE, 'Optimized')).strip().lower()
-    is_custom = mode in {'custom', 'customized'}
+    """Render Chapter 8 (Standards & Assumptions) using centralized styles."""
+    mode = str(input_dict.get(KEY_DESIGN_MODE, "Optimized")).strip().lower()
+    is_custom = mode in {"custom", "customized"}
     return _ch8_assumptions(is_custom)
 
 
 def _ch8_assumptions(is_custom: bool) -> str:
+    t_irc = build_longtable(
+        col_spec="|C{2.4cm}|C{1.6cm}|L{11.6cm}|",
+        caption="IRC Codes",
+        headers=["Code", "Year", "Title / Scope"],
+        body="\n".join([
+            r"IRC 5 & 2015 & General Features of Design - carriageway widths, kerb, footpath dimensions \\ \hline",
+            r"IRC 6 & 2017 & Loads and Load Combinations - dead load, live load, impact, wind, temperature, etc. \\ \hline",
+            r"IRC 22 & 2015 & Composite Construction (LS) - Composite section properties, ULS/SLS design, shear connectors \\ \hline",
+            r"IRC 24 & 2010 & Steel Road Bridges (LS) - Stiffener design, skew angle limits, diaphragm requirements \\ \hline",
+            r"IRC 112 & 2020 & Concrete Road Bridges - Deck slab flexure, shear, crack width, reinforcement \\ \hline",
+            r"IRC SP 114 & 2018 & Seismic Design of Road Bridges \\ \hline",
+        ]),
+        font_size=r"\small",
+        tabcolsep="4pt",
+    )
+
+    t_is = build_longtable(
+        col_spec="|C{2.8cm}|C{1.6cm}|L{11.2cm}|",
+        caption="IS Codes",
+        headers=["Code", "Year", "Scope"],
+        body="\n".join([
+            r"IS 800 & 2007 & Steel construction - tension, compression, bending, shear, LTB, stiffeners, combined checks \\ \hline",
+            r"IS 456 & 2000 & Concrete - simplified stress-block for deck moment capacity \\ \hline",
+            r"IS 1786 & 2008 & Reinforcement steel properties \\ \hline",
+            r"IS 1893 (Part 3) & 2014 & Earthquake resistant design \\ \hline",
+            r"IS 2062 & 2011 & Structural steel - yield and ultimate strength by grade \\ \hline",
+        ]),
+        font_size=r"\small",
+        tabcolsep="4pt",
+    )
+
     assumptions = [
         r"""
 \chapter{Standards \& Assumptions}
 \label{ch:Design Standards}
 
-This section provides references to standards used to calibrate the OsdagBridge
-design modules, and notes the limitations of the current software version.
+This section provides references to standards used to calibrate the OsdagBridge design modules, and notes the limitations of the current software version.
 
 \section{Design Standards}
 \label{sec:design_standards}
 
-The following Indian Road Congress (IRC) codes and Indian Standards (IS) 
-form the basis of all design calculations in this software.
-
-\vspace{0.5cm}
-
-\begingroup
-\setlength{\tabcolsep}{3.5pt}
-\begin{table}[H]
-\caption{\textbf{IRC Codes}}
-\begin{tabular}{|c|c|p{13cm}|}
-\hline
-\textbf{Code} & \textbf{Year} & \textbf{Title / Scope} \\ 
-\hline
-IRC 5 & 2015 & General Features of Design - carriageway widths, kerb, footpath dimensions \\ 
-\hline
-IRC 6 & 2017 & Loads and Load Combinations - dead load, live load, impact, wind, temperature, etc. \\ 
-\hline
-IRC 22 & 2015 & Composite Construction (LS) - Composite section properties, ULS/SLS design, shear connectors \\ 
-\hline
-IRC 24 & 2010 & Steel Road Bridges (LS) - Stiffener design, skew angle limits, diaphragm requirements \\ 
-\hline
-IRC 112 & 2020 & Concrete Road Bridges - Deck slab flexure, shear, crack width, reinforcement \\ 
-\hline
-IRC SP 114 & 2018 & Seismic Design of Road Bridges \\ 
-\hline
-\end{tabular}
-\end{table}
-
-\begingroup
-\setlength{\tabcolsep}{3.5pt}
-\begin{table}[H]
-\caption{\textbf{IS Codes}}
-\begin{tabular}{|c|c|p{13cm}|}
-\hline
-\textbf{Code} & \textbf{Year} & \textbf{Scope} \\
-\hline
-IS 800 & 2007 & Steel construction - tension, compression, bending, shear, LTB, stiffeners, combined checks \\
-\hline
-IS 456 & 2000 & Concrete - simplified stress-block for deck moment capacity \\
-\hline
-IS 1786 & 2008 & Reinforcement steel properties \\
-\hline
-IS 1893 (Part 3) & 2014 & Earthquake resistant design \\
-\hline
-IS 2062 & 2011 & Structural steel - yield and ultimate strength by grade \\
-\hline
-\end{tabular}
-\end{table}
-
+The following Indian Road Congress (IRC) codes and Indian Standards (IS) form the basis of all design calculations in this software.
+"""
+        + t_irc
+        + t_is
+        + r"""
 \clearpage
 \section{Analysis and Design Assumptions of This Version}
 \label{sec:assumptions}
@@ -125,7 +84,8 @@ IS 2062 & 2011 & Structural steel - yield and ultimate strength by grade \\
     ]
 
     if not is_custom:
-        assumptions.append(r"""
+        assumptions.append(
+            r"""
 \textbf{Material Properties (IRC 22:2015 Annex III)}
 
 \begin{itemize}
@@ -173,9 +133,11 @@ IS 2062 & 2011 & Structural steel - yield and ultimate strength by grade \\
 \begin{itemize}
 \item Intermediate transverse stiffener and bearing stiffener design follows IS 800:2007 Cl.8.7.2/8.7.3 and IRC 24:2010 Cl.509.7.2/509.7.3.
 \end{itemize}
-""")
+"""
+        )
 
-    assumptions.append(r"""
+    assumptions.append(
+        r"""
 \section{Known Limitations of This Version}
 \label{sec:limitations}
 
@@ -183,13 +145,10 @@ IS 2062 & 2011 & Structural steel - yield and ultimate strength by grade \\
 \item Substructure (piers, pile caps, foundations) and bearing design are not included.
 \item Splice connection design is not implemented.
 \item Skew angle $>$ 15 degrees requires independent manual analysis (IRC 24 Cl. 504.8).
-\item Construction stage sequence analysis is approximate; detailed staged analysis
-  should be performed for long-term deflection checks.
-\item The grillage analysis assumes simply supported boundary conditions;
-  continuous spans are not currently supported.
+\item Construction stage sequence analysis is approximate; detailed staged analysis should be performed for long-term deflection checks.
+\item The grillage analysis assumes simply supported boundary conditions; continuous spans are not currently supported.
 \end{itemize}
-""")
+"""
+    )
 
     return "\n".join(assumptions)
-
-
